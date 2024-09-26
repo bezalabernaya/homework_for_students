@@ -6,7 +6,17 @@
 Проверка:
 pytest ./2_sentence_is_pangram/test.py
 """
+import string
 
 
 def is_sentence_is_pangram(sentence: str) -> bool:
     """Пишите ваш код здесь."""
+    counter = 0
+    alphabet = list(string.ascii_lowercase)
+    for i in alphabet:
+        if i in sentence.lower():
+            counter += 1
+    if counter == 26:
+        return True
+    else:
+        return False
