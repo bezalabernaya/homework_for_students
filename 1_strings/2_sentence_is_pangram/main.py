@@ -16,7 +16,5 @@ def is_sentence_is_pangram(sentence: str) -> bool:
     for i in alphabet:
         if i in sentence.lower():
             counter += 1
-    if counter == 26:
-        return True
-    else:
-        return False
+    return counter == 26
+
