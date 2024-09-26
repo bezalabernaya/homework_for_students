@@ -15,3 +15,14 @@ pytest ./1_two_string_array_equivalent/test.py
 def is_array_string_are_equal(array_string_1: list[str], array_string_2: list[str]) -> bool:
     """Пишите ваш код здесь."""
 
+    answer = ["", ""]
+    if len(array_string_1) != 0 and len(array_string_2) != 0:
+        for m in array_string_1:
+            answer[0] += m.lower()
+        for g in array_string_2:
+            answer[1] += g.lower()
+        return answer[0] == answer[1]
+    elif len(array_string_1) == 0 and len(array_string_2) == 0:
+        return True
+    else:
+        return False
