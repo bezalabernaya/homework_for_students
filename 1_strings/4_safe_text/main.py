@@ -22,4 +22,11 @@ def recover_article() -> str:
     wrong_article = get_wrong_article()
 
     # Ваш код ниже, возвращайте уже отредактированный текст!
-    return wrong_article
+    sentences = [i for i in wrong_article.split('\n')]
+    norm_sen = ['' for i in range(len(sentences))]
+    for j in range(len(sentences)):
+        for k in sentences[j][int(len(sentences[j]) / 2) - 1::-1]:
+            norm_sen[j] += k.lower()
+        norm_sen[j] = norm_sen[j].replace("woof-woof", "cat").capitalize()
+
+    return ".\n".join(norm_sen)
