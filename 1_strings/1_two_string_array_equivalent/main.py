@@ -16,7 +16,7 @@ def is_array_string_are_equal(array_string_1: list[str], array_string_2: list[st
     """Пишите ваш код здесь."""
 
     answer = ["", ""]
-    if len(array_string_1) != 0 and len(array_string_2) != 0:
+    if array_string_1 and array_string_2:
         for m in array_string_1:
             answer[0] += m.lower()
         for g in array_string_2:
