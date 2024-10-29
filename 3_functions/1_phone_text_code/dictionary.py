@@ -1,7 +1,5 @@
 def building_dict() -> dict:
-    a = ord('а')
-    alphabet = '.,?!:;'
-    alphabet += ''.join([chr(i) for i in range(a, a + 32)])
+    alphabet = '.,?!:;абвгдежзийклмнопрстуфхцчшщъыьэюя'
     d = {'0': ' '}
     counter = 0
     num = 1

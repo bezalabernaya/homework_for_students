@@ -5,11 +5,11 @@ from dictionary import building_dict
 
 def decode_numbers(numbers: str) -> str | None:
 
-    dic = building_dict()
+    d = building_dict()
     result = ""
     for i in numbers.split():
-        if i in dic:
-            result += dic.get(i)
+        if i in d:
+            result += d.get(i)
         else:
             return None
 
