@@ -11,11 +11,13 @@ def retry(count: int, delay: timedelta, handled_exceptions: tuple[type(Exception
     def decorator(func):
 
         def catching_exceptions(*args, **kwargs):
-            for i in range(count):
+            i = count
+            while i > 0:
+                i -= 1
                 try:
                     return func(*args, **kwargs)
                 except handled_exceptions:
-                    if i == count - 1:
+                    if i == 0:
                         raise
                 time.sleep(delay.total_seconds())
 
