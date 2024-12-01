@@ -14,13 +14,22 @@ class Chain:
     def __init__(self, *iterables: Iterable[T]):
         """Реализуйте класс ниже"""
         self.iterables = iterables
+        self._iter_idx1 = 0
+        self._iter_idx2 = 0
 
     def __iter__(self):
-        for i in self.iterables:
-            for j in i:
-                yield j
+        return self
 
     def __next__(self):
-        return self
+        if self._iter_idx1 < len(self.iterables):
+            if self._iter_idx2 < len(self.iterables[self._iter_idx1]):
+                self._iter_idx2 += 1
+            else:
+                self._iter_idx2 = 1
+                self._iter_idx1 += 1
+        try:
+            return self.iterables[self._iter_idx1][self._iter_idx2 - 1]
+        except Exception:
+            raise StopIteration
 
 
