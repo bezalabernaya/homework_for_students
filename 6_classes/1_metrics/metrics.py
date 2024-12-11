@@ -1,38 +1,38 @@
 import datetime
 from dateutil import tz
-from typing import Protocol
 
 
 class Statsd:
     def __init__(self, path, buffer_limit, sep, start):
         """Реализуйте класс"""
-        self.buffer = []
-        self.data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
         self.path = path
         self.buffer_limit = buffer_limit
         self.sep = sep
-        self.start = start
-        self._file = None
+        #self.start = start
+        self.buffer = []
+        self.data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
+        Writer().check_header(filepath=self.path, start=start)
 
     def __enter__(self):
-        self._file = open(self.path,'a')
-        return self._file
+        return self
 
     def __exit__(self, type, value, traceback):
-        if self._file is not None:
-            self._file.close()
-        return True
+        #Writer().check_header(filepath=self.path, start=self.start)
+        Writer().write_metrics(filepath=self.path, b=self.buffer)
+        return False
 
     def incr(self, name: str):
+        #Writer().check_header(filepath=self.path, start=self.start)
         self.buffer.append(f"{self.data}{self.sep}{name}{self.sep}1")
         if len(self.buffer) == self.buffer_limit:
-            Writer().write_metrics(filepath=self.path, b=self.buffer, start=self.start)
+            Writer().write_metrics(filepath=self.path, b=self.buffer)
             self.buffer.clear()
 
     def decr(self, name: str):
+        #Writer().check_header(filepath=self.path, start=self.start)
         self.buffer.append(f"{self.data}{self.sep}{name}{self.sep}-1")
         if len(self.buffer) == self.buffer_limit:
-            Writer().write_metrics(filepath=self.path, b=self.buffer, start=self.start)
+            Writer().write_metrics(filepath=self.path, b=self.buffer)
             self.buffer.clear()
 
 
@@ -52,24 +52,19 @@ class Statsd:
 
 
 class Writer:
-
-    def write_metrics(self, filepath: str, b, start):
+    def check_header(self, start, filepath):
         try:
-            with open(filepath, "r") as file:
-                line = file.readlines()
-            if start in line:
-                with open(filepath, "a") as file:
-                    for line in b:
-                        file.write(line + '\n')
+            file = open(filepath, "r")
         except Exception:
-            with open(filepath, "a") as file:
-                if start:
-                    file.write(start)
-                for line in b:
-                    file.write(line + '\n')
+            file = open(filepath, "w")
+            file.write(start)
+        finally:
+            file.close()
 
-
-
+    def write_metrics(self, filepath: str, b, ):
+        with open(filepath, "a") as file:
+            for line in b:
+                file.write(line + '\n')
 
 
 def get_txt_statsd(path: str, buffer_limit: int = 10) -> Statsd:
@@ -87,8 +82,11 @@ def get_csv_statsd(path: str, buffer_limit: int = 10) -> Statsd:
     else:
         raise ValueError
 
+
 if __name__ == '__main__':
-    statsd = get_txt_statsd("metrics.txt")
-    for i in range(20):
-        statsd.incr('giu')
+    statsd = get_csv_statsd("metrics.csv")
+    with statsd as s:
+        s.incr("test.metric.name")
+
+
 
