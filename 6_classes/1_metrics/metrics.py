@@ -8,53 +8,38 @@ class Statsd:
         self.path = path
         self.buffer_limit = buffer_limit
         self.sep = sep
-        #self.start = start
-        self.buffer = []
-        self.data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
+        self._buffer = []
+        self._data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
         Writer().check_header(filepath=self.path, start=start)
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        #Writer().check_header(filepath=self.path, start=self.start)
-        Writer().write_metrics(filepath=self.path, b=self.buffer)
+        Writer().write_metrics(filepath=self.path, b=self._buffer)
         return False
 
     def incr(self, name: str):
-        #Writer().check_header(filepath=self.path, start=self.start)
-        self.buffer.append(f"{self.data}{self.sep}{name}{self.sep}1")
-        if len(self.buffer) == self.buffer_limit:
-            Writer().write_metrics(filepath=self.path, b=self.buffer)
-            self.buffer.clear()
+        self._buffer.append(f"{self._data}{self.sep}{name}{self.sep}1")
+        if len(self._buffer) == self.buffer_limit:
+            Writer().write_metrics(filepath=self.path, b=self._buffer)
+            self._buffer.clear()
 
     def decr(self, name: str):
-        #Writer().check_header(filepath=self.path, start=self.start)
-        self.buffer.append(f"{self.data}{self.sep}{name}{self.sep}-1")
-        if len(self.buffer) == self.buffer_limit:
-            Writer().write_metrics(filepath=self.path, b=self.buffer)
-            self.buffer.clear()
-
-
-
-'''class CSVWriter:
-    def write_metrics(self, filepath: str):
-        metrics = []
-        with open(filepath, "r") as file:
-            reader = csv.reader(file, delimiter=";")
-            for idx, row in enumerate(reader):
-                if idx == 0:
-                    continue
-
-                metrics.append(Metric(*row))
-
-        return metrics'''
+        self._buffer.append(f"{self._data}{self.sep}{name}{self.sep}-1")
+        if len(self._buffer) == self.buffer_limit:
+            Writer().write_metrics(filepath=self.path, b=self._buffer)
+            self._buffer.clear()
 
 
 class Writer:
+
     def check_header(self, start, filepath):
         try:
             file = open(filepath, "r")
+            line = file.readlines()
+            if line != start:
+                raise
         except Exception:
             file = open(filepath, "w")
             file.write(start)
