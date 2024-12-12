@@ -68,10 +68,5 @@ def get_csv_statsd(path: str, buffer_limit: int = 10) -> Statsd:
         raise ValueError
 
 
-if __name__ == '__main__':
-    statsd = get_csv_statsd("metrics.csv")
-    with statsd as s:
-        s.incr("test.metric.name")
-
 
 
