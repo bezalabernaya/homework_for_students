@@ -9,26 +9,28 @@ class Statsd:
         self.buffer_limit = buffer_limit
         self.sep = sep
         self._buffer = []
-        self._data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
-        Writer().check_header(filepath=self.path, start=start)
+        self.writer = Writer()
+        self.writer.check_header(filepath=self.path, start=start)
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        Writer().write_metrics(filepath=self.path, b=self._buffer)
+        self.writer.write_metrics(filepath=self.path, b=self._buffer)
         return False
 
     def incr(self, name: str):
-        self._buffer.append(f"{self._data}{self.sep}{name}{self.sep}1")
+        _data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
+        self._buffer.append(f"{_data}{self.sep}{name}{self.sep}1")
         if len(self._buffer) == self.buffer_limit:
-            Writer().write_metrics(filepath=self.path, b=self._buffer)
+            self.writer.write_metrics(filepath=self.path, b=self._buffer)
             self._buffer.clear()
 
     def decr(self, name: str):
-        self._buffer.append(f"{self._data}{self.sep}{name}{self.sep}-1")
+        _data = datetime.datetime.now(tz=tz.tzutc()).strftime("%Y-%m-%dT%H:%M:%S%z")
+        self._buffer.append(f"{_data}{self.sep}{name}{self.sep}-1")
         if len(self._buffer) == self.buffer_limit:
-            Writer().write_metrics(filepath=self.path, b=self._buffer)
+            self.writer.write_metrics(filepath=self.path, b=self._buffer)
             self._buffer.clear()
 
 
